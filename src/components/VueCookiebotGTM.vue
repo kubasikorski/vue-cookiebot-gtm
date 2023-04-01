@@ -25,7 +25,7 @@
                 <button class="cookiebanner__buttons__details" id="CustomCookiebotOpenDetails"
                         @click="toogleShowDetails()" aria-expanded="false"
                         aria-controls="CookieBannerDetails">{{
-                    (showDetails ? content.hideDetails : content.showDetails)
+                    (showDetails ? content.hideDetails : content.personalize)
                   }}
                 </button>
               </li>
@@ -33,32 +33,77 @@
           </div>
         </div>
       </div>
-      <CookieDetails @submitChoosen="submitChoosen" :lastUpdate="lastUpdate" v-if="showDetails"/>
+
+      <div v-if="showDetails" id="CookieBannerDetails" class="cookiebanner__details">
+        <div class="cookiebanner__details__inner">
+          <div class="cookiebanner__details__preferences">
+            <fieldset class="cookiebanner__details__preferences__options">
+              <legend class="screen-reader-text">[#LEVELOPTIN_ALLOW_SELECTION#]</legend>
+              <CookieType v-model="approvals.necessary" inputValue="necessary" :disabled="true"
+                          :content="content.types.a"/>
+              <CookieType v-model="approvals.preferences" inputValue="preferences" :disabled="false"
+                          :content="content.types.b"/>
+              <CookieType v-model="approvals.statistics" inputValue="statistics" :disabled="false"
+                          :content="content.types.c"/>
+              <CookieType v-model="approvals.marketing" inputValue="marketing" :disabled="false"
+                          :content="content.types.d"/>
+            </fieldset>
+            <div class="cookiebanner__details__preferences__buttons">
+              <button v-on:click="submitChoosen(approvals)"
+                      id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowallSelection"
+                      class="cookiebanner__accept-selection">{{ content.allowSelected }}
+              </button>
+            </div>
+          </div>
+          <div class="cookiebanner__details__updated">
+            <p v-if="lastUpdate">{{ content.lastUpdated }}: {{ lastUpdate }}</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import CookieDetails from './CookieDetails.vue'
+import CookieType from './CookieType.vue'
 
 export default {
   name: 'VueCookiebotGTM',
   components: {
-    CookieDetails
+    CookieType
   },
-  props: {},
+  props: ['forceOpen'],
+  mounted() {
+    let storageCookies = window.localStorage.getItem("cookiegtm");
+    if (storageCookies) {
+      this.approvals = JSON.parse(storageCookies)
+    }
+    if (this.forceOpen || !storageCookies) {
+      this.showCookieModal = true
+    }
+    this.sendGTM()
+  },
   data() {
     return {
       lastUpdate: null,
       showCookieModal: true,
-      showDetails: true,
+      showDetails: false,
+      approvals: {
+        necessary: true,
+        preferences: false,
+        statistics: false,
+        marketing: false,
+      },
       content: {
         title: 'Niniejsza strona korzysta z plików cookie',
         details: 'Wykorzystujemy pliki cookie do spersonalizowania treści i reklam, aby oferować funkcje społecznościowe i analizować ruch w naszej witrynie. Informacje o tym, jak korzystasz z naszej witryny, udostępniamy partnerom społecznościowym, reklamowym i analitycznym. Partnerzy mogą połączyć te informacje z innymi danymi otrzymanymi od Ciebie lub uzyskanymi podczas korzystania z ich usług.',
         allowAll: 'Zezwól na wszystkie',
         decline: 'Odmowa',
-        showDetails: 'Spersonalizuj',
+        personalize: 'Spersonalizuj',
         hideDetails: 'Ukryj detale',
+        showDetails: 'Pokaż detale',
+        allowSelected: 'Zezwól na wybrane',
+        lastUpdated: 'Ostatnia aktualizacja',
         types: {
           a: {
             title: 'Niezbędne',
@@ -85,27 +130,35 @@ export default {
     }
   },
   methods: {
+    sendGTM() {
+      window.dataLayer = window.dataLayer || [];
+      let approvals = this.approvals
+      window.dataLayer.push({
+        'event': 'Cookie Consent Init',
+        consent: {
+          approvals
+        }
+      });
+    },
+    submitAction(approvals) {
+      window.localStorage.setItem("cookiegtm", JSON.stringify(approvals));
+      this.showCookieModal = false
+    },
     submitChoosen(approvals) {
       this.submitAction(approvals)
     },
     declineAction() {
-      let approvals = {
-        necessary: true
+      for (const [key] of Object.entries(this.approvals)) {
+        this.approvals[key] = false
       }
-      this.submitAction(approvals)
-    },
-    submitAction(approvals) {
-      this.showCookieModal = false
-      console.log(approvals)
+      this.approvals.necessary = true
+      this.submitAction(this.approvals)
     },
     allowAllAction() {
-      let approvals = {
-        necessary: true,
-        preferences: true,
-        statistics: true,
-        marketing: true,
+      for (const [key] of Object.entries(this.approvals)) {
+        this.approvals[key] = true
       }
-      this.submitAction(approvals)
+      this.submitAction(this.approvals)
     },
     toogleShowDetails() {
       this.showDetails = !this.showDetails
