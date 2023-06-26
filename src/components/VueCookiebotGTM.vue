@@ -74,6 +74,12 @@ export default {
   },
   props: ['forceOpen'],
   mounted() {
+
+    this.$root.$on('openCookieModal', () => {
+      this.showDetails = true
+      this.showCookieModal = true
+    })
+
     let storageCookies = window.localStorage.getItem("cookiegtm");
     if (storageCookies) {
       this.approvals = JSON.parse(storageCookies)
@@ -86,7 +92,7 @@ export default {
   data() {
     return {
       lastUpdate: null,
-      showCookieModal: true,
+      showCookieModal: false,
       showDetails: false,
       approvals: {
         necessary: true,
@@ -210,10 +216,7 @@ export default {
 }
 
 #CookieBannerOverlay {
-  /* legacy browser compatibility */
   background: rgba(0, 0, 0, .4);
-  /* legacy browser compatibility end */
-  background: var(--cb-overlay-background, rgba(0, 0, 0, .4));
   width: 100%;
   height: 100%;
   position: fixed;
@@ -242,21 +245,17 @@ export default {
 }
 
 #CookieBannerNotice {
-  /* legacy browser compatibility */
   color: #0f0f0f;
-  max-width: 1080px;
-  /* legacy browser compatibility end */
-  padding: 40px 28px;
+  max-width: 800px;
   overflow: auto;
   max-height: 100vh;
   max-height: calc(100vh - 24px);
   max-height: calc(100vh - 24px - env(safe-area-inset-bottom, 0));
   width: 100%;
   width: calc(100% - 24px);
-  max-width: var(--cb-dialog-max-width, 1080px);
-  background: #fff;
+  background-color:rgba(255, 255, 255, 0.95);
   border-radius: 10px;
-  color: var(--cb-text-color, #0f0f0f);
+  color: #0f0f0f;
   margin: 0 auto;
   z-index: 500;
   pointer-events: auto;
@@ -284,7 +283,7 @@ export default {
 
 @media (min-width: 800px) {
   #CookieBannerNotice {
-    padding: 48px;
+    padding: 24px;
   }
 }
 
@@ -376,15 +375,12 @@ export default {
 }
 
 #CookieBanner .cookiebanner__main__inner {
-  /* legacy browser compatibility */
-  max-width: 1080px;
-  /* legacy browser compatibility end */
-  max-width: var(--cb-dialog-max-width, 1080px);
+  max-width: 800px;
   margin: 0 auto;
 }
 
-#CookieBanner .cookiebanner__main__content {
-
+#CookieBanner .cookiebanner__main__content p {
+  color:#000;
 }
 
 @media (min-width: 800px) {
@@ -394,10 +390,8 @@ export default {
 }
 
 #CookieBanner .cookiebanner__main__title {
-  /* legacy browser compatibility */
   font-weight: bold;
   font-size: 20px;
-  /* legacy browser compatibility end */
   font-family: var(--cb-title-font-family);
   font-weight: var(--cb-title-font-weight, bold);
   font-size: var(--cb-title-font-size-mobile, 20px);
@@ -435,7 +429,7 @@ export default {
     font-size: 16px;
     /* legacy browser compatibility end */
     font-size: var(--cb-description-font-size-desktop, 16px);
-    line-height: 1.75;
+    line-height: 1.25;
   }
 }
 
@@ -481,8 +475,6 @@ export default {
 #CookieBanner .cookiebanner__buttons__details {
   /* legacy browser compatibility */
   font-size: 16px;
-  /* legacy browser compatibility end */
-  font-size: var(--cb-details-button-font-size, 16px);
   margin-top: 8px;
   padding: 8px 16px;
   width: 100%;
@@ -529,9 +521,9 @@ export default {
 }
 
 #CookieBanner .cookiebanner__buttons__accept {
-  color: var(--cb-accept-button-color, var(--cb-button-color, #fff));
-  background: var(--cb-accept-button-background, var(--cb-button-background, #0f0f0f));
-  border: var(--cb-accept-button-border, var(--cb-button-border, 2px solid #0f0f0f));
+  color:#fff;
+  background:  #0f0f0f;
+  border:2px solid #0f0f0f;
 }
 
 #CookieBanner .cookiebanner__buttons__accept:hover,
@@ -540,23 +532,18 @@ export default {
   /* legacy browser compatibility */
   color: #fff;
   background: #0f0f0f;
-  /* legacy browser compatibility end */
-  color: var(--cb-accept-button-active-color, var(--cb-button-active-color, #fff));
-  background: var(--cb-accept-button-active-background, var(--cb-button-active-background, #0f0f0f));
-  border: var(--cb-accept-button-active-border, var(--cb-accept-button-border, var(--cb-button-active-border, var(--cb-button-border, 2px solid #0f0f0f))));
+  color:#fff;
+  background:  #0f0f0f;
+  border: 2px solid #0f0f0f;
 }
 
 
 #CookieBanner .cookiebanner__buttons__deny:hover,
 #CookieBanner .cookiebanner__buttons__deny:focus,
 #CookieBanner .cookiebanner__buttons__deny:active {
-  /* legacy browser compatibility */
   color: #fff;
   background: #0f0f0f;
-  /* legacy browser compatibility end */
-  color: var(--cb-button-active-color, #fff);
-  background: var(--cb-button-active-background, #0f0f0f);
-  border: var(--cb-button-active-border, var(--cb-button-border, 2px solid #0f0f0f));
+  border: 2px solid #0f0f0f;
 }
 
 /**
@@ -569,10 +556,7 @@ export default {
 }
 
 #CookieBanner .cookiebanner__details__inner {
-  /* legacy browser compatibility */
-  max-width: 1080px;
-  /* legacy browser compatibility end */
-  max-width: var(--cb-dialog-max-width, 1080px);
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -609,13 +593,11 @@ export default {
 }
 
 #CookieBanner .cookiebanner__accept-selection {
-  /* legacy browser compatibility */
   background: transparent;
   border: 2px solid #0f0f0f;
   border-radius: 3px;
   font-size: 15px;
   font-weight: bold;
-  /* legacy browser compatibility end */
   transition: .2s ease-in-out;
   border-radius: var(--cb-button-border-radius, 3px);
   background: var(--cb-button-background, transparent);
@@ -633,18 +615,11 @@ export default {
 #CookieBanner .cookiebanner__accept-selection:hover,
 #CookieBanner .cookiebanner__accept-selection:focus,
 #CookieBanner .cookiebanner__accept-selection:active {
-  /* legacy browser compatibility */
   color: #fff;
   background: #0f0f0f;
-  /* legacy browser compatibility end */
-  color: var(--cb-button-active-color, #fff);
-  background: var(--cb-button-active-background, #0f0f0f);
-  border: var(--cb-button-active-border, var(--cb-button-border, 2px solid #0f0f0f));
+  border: 2px solid #0f0f0f;
 }
 
-/**
- * Updated
- */
 
 #CookieBanner .cookiebanner__details__updated {
   margin-top: 24px;

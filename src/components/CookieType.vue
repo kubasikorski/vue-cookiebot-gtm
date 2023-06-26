@@ -79,7 +79,7 @@ export default {
 
 @media (min-width: 800px) {
   .cookiebanner__preference {
-    padding: 32px;
+    padding: 16px;
   }
 }
 
@@ -129,6 +129,10 @@ export default {
 .cookiebanner__preference__text {
   display: block;
   margin-top: 12px;
+}
+
+.cookiebanner__preference__text p{
+  color:#000;
 }
 
 @media (min-width: 540px) {
@@ -181,6 +185,12 @@ export default {
 .cookiebanner__preference__more__description {
   margin: 0;
   font-size: 16px;
+  color: #0e0c0c;
+  text-transform: none;
+}
+
+.cookiebanner__preference__more__description p{
+  color: #0e0c0c;
 }
 
 .cookiebanner__preference__ui__handle {
